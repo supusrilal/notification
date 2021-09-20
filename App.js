@@ -13,7 +13,8 @@ useEffect(() => {
   return () => {
     AppState.removeEventListener("change", _handleAppStateChange)
   }
-}, [])
+}, []) 
+
 
 const _handleAppStateChange = (nextAppState) => {
   if(appState.current.match(/inactive|background/) && 
