@@ -1,11 +1,45 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import { StyleSheet, Text, View, AppState, ToastAndroid } from 'react-native';
 
 export default function App() {
+
+const appState = useRef(AppState.currentState)
+const [useStateVisible, setappStateVisible] = useState(appState.current)
+
+
+useEffect(() => {
+  AppState.addEventListener("change", _handleAppStateChange)
+  return () => {
+    AppState.removeEventListener("change", _handleAppStateChange)
+  }
+}, [])
+
+const _handleAppStateChange = (nextAppState) => {
+  if(appState.current.match(/inactive|background/) && 
+  nextAppState === "active"){
+    console.log("App has come to the foreground")
+  }
+
+  appState.current = nextAppState
+  setappStateVisible(appState.current)
+
+  console.log("AppState: ",appState.current)
+
+  if(appState.current == "background"){
+
+    ToastAndroid.show('App run in background',
+    ToastAndroid.SHORT)
+
+  }
+
+}
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Text style ={styles.textStyle}>
+        current state is:
+      </Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -14,8 +48,13 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center'
+  },
+  textStyle: {
+    textAlign: 'center',
+    fontSize: 20,
+    color: 'black'
   },
 });
+ 
